@@ -15,3 +15,4 @@ Papers on NbE
 * [Extensional normalisation and type-directed partial evaluation for typed lambda calculus with sums](https://dl.acm.org/citation.cfm?id=964007). V Balat, R Cosmo, M Fiore (2004)
 * [Normalization by Evaluation for λ→2](https://link.springer.com/chapter/10.1007/978-3-540-24754-8_19) T. Altenkirch, T. Uustalu (2004)
 * [Normalization by Evaluation and Algebraic Effects](https://www.sciencedirect.com/science/article/pii/S1571066113000534) Danel Ahman, Sam Staton (2013)
+* [Normalization by gluing](https://www.jonmsterling.com/pdfs/gluing-note.pdf) Sterling, Spitters (2018)
