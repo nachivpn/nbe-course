@@ -3,7 +3,7 @@ Papers on NbE
 
 * [An inverse of the evaluation functional for typed lambda-calculus](https://epub.ub.uni-muenchen.de/4261/1/4261.pdf). U Berger and H Schwichtenberg (1991)
 * [From semantics to rules: A machine assisted analysis](https://link.springer.com/content/pdf/10.1007/BFb0049326.pdf). C Coquand (1993)
-* [Intuitionistic model constructions and normalization proofs](https://www.cambridge.org/core/journals/mathematical-structures-in-computer-science/article/intuitionistic-model-constructions-and-normalization-proofs/15AE4B790FF9E4B1998CE92054DBD3CF). T Coquand and P Dybjer (1993,1997)
+* [Intuitionistic model constructions and normalization proofs](https://www.cambridge.org/core/journals/mathematical-structures-in-computer-science/article/intuitionistic-model-constructions-and-normalization-proofs/15AE4B790FF9E4B1998CE92054DBD3CF). T Coquand and P Dybjer (1993, 1997)
 * [Categorical reconstruction of a reduction free normalization proof](https://link.springer.com/content/pdf/10.1007/3-540-60164-3_27.pdf). T Altenkirch, M Hofmann, and T Streicher (1995)
 * [Extracting a proof of coherence for monoidal categories from a proof of normalization for monoids](https://link.springer.com/chapter/10.1007/3-540-61780-9_61). I Beylin and P Dybjer (1995) 
 * [Normalization by Evaluation](https://pdfs.semanticscholar.org/6f59/ea5b7374ad94ce0b2c0b5e821bdcac631f8e.pdf). U Berger, M Eberl, and H Schwichtenberg (1998)
