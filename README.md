@@ -11,16 +11,13 @@ The course will take place during 2019 LP2 - LP3 starting 24th October until end
 
 ## Course plan
 
-The course consists of weekly meetings every (TBD, Friday?) at (TBD, 13.15?). 
-During the weekly meetings we will have discussions over common material. 
-Here's a tentative plan:
+The course consists of three weekly meetings which will take place every (TBD, Friday?) at (TBD, 13.15?) in room (TBD), starting (TBD, 25th October?). The goal of these meetings is to facilitate discussions on introductory topics. Here's a tentative plan:
 
-* Session 1: Introduction to NbE for simply typed and untyped lambda calculi
-* Session 2: NbE implementation techniques + Different flavors of normalization
-* Session 3: NbE semantics + Extensions of NbE (for sums, dependent types, System F, etc.)
+* Meeting 1: Introduction to NbE for simply-typed and untyped lambda calculi
+* Meeting 2: NbE implementation techniques (Kripke-style vs "gensym") + Different flavors of normalization (WHNF, without eta rules, etc.)
+* Meeting 3: NbE semantics + Extensions of NbE (for sums, dependent types, System F, etc.)
 
-Every participant is expected to give a presentation on the chosen papers 
-at the end of the course, on the 28th of November (at [ITC](https://github.com/InitialTypes/Club/wiki)).
+Every participant is expected to read atleast two papers from the [list of papers](papers.md), and give a presentation on them at the [ITC](https://github.com/InitialTypes/Club/wiki) meeting on the 28th of November.
 
 More details on the presentation to follow.
 
@@ -34,7 +31,7 @@ Full participation in the course entails:
 
 - [ ] Attending a majority of the discussion sessions.
 - [ ] Giving a presentation based on the chosen papers.
-- [ ] Writing a survey paper based on the chosen papers.
+- [ ] Writing a survey article based on the chosen papers.
 
 ## Participants
 
