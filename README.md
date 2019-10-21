@@ -11,7 +11,7 @@ The course will take place during 2019 LP2 - LP3 starting 24th October until end
 
 ## Course plan
 
-The course consists of three weekly meetings which will take place every (TBD, Friday?) at (TBD, 13.15?) in room (TBD), starting (TBD, 25th October?). The goal of these meetings is to facilitate discussions on introductory topics. Here's a tentative plan:
+The course consists of three meetings which will take place weekly every (TBD, Friday?) at (TBD, 13.15?) in room (TBD), starting (TBD, 25th October?). The goal of these meetings is to facilitate discussions on introductory topics. Here's a tentative plan:
 
 * Meeting 1: Introduction to NbE for simply-typed and untyped lambda calculi
 * Meeting 2: NbE implementation techniques (Kripke-style vs "gensym") + Different flavors of normalization (WHNF, without eta rules, etc.)
