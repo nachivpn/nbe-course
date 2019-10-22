@@ -1,5 +1,4 @@
-# papers-on-nbe
-Papers on NbE
+# Collection of some papers on NbE
 
 * [An inverse of the evaluation functional for typed lambda-calculus](https://epub.ub.uni-muenchen.de/4261/1/4261.pdf). U Berger and H Schwichtenberg (1991)
 * [From semantics to rules: A machine assisted analysis](https://link.springer.com/content/pdf/10.1007/BFb0049326.pdf). C Coquand (1993)
