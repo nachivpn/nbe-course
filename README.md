@@ -1,6 +1,6 @@
 # NbE @ Chalmers
 
-Course on Normalization by Evaluation at the Chalmers CSE department, in principle for PhD students.
+Course on Normalization by Evaluation (NbE) at the Chalmers CSE department, in principle for PhD students.
 
 ## Course plan
 
@@ -10,9 +10,9 @@ The course will take place during 2019 LP2 - LP3 starting 24th October until end
 
 The meetings will take place weekly every Friday in room (TBD), starting 25th October. The goal of these meetings is to facilitate discussions on introductory topics. Here's a tentative schedule:
 
-* Meeting 1 (25/10, 13:15): Introduction to NbE for simply-typed lambda calculus
+* Meeting 1 (25/10, 10:00): Introduction to NbE for the simply-typed lambda calculus
   - Reading: Chapter 2 in [1] and Section 2 (upto 2.4) in [6]
-* Meeting 2 (1/11, 13:15): Introduction to NbE for untyped lambda calculus and untyped combinators
+* Meeting 2 (1/11, 13:15): Introduction to NbE for untyped lambda calculus and combinators
   - Reading: Chapter 3 in [1] (untyped lambda calculus), and parts of [7] (untyped combinators)
 * Meeting 3 (8/11, 10:00): Proving soundness of NbE
   - Reading: TBD
@@ -27,7 +27,7 @@ Examiner: [Andreas Abel](http://www.cse.chalmers.se/~abela/)
 
 Credits: 4, but the final decision about how many credits the course gives rests with each participant’s respective examiner.
 
-Full participation in the course entails:
+The course will be examined based on the following criteria:
 
 - [ ] Attending a majority of the discussion sessions.
 - [ ] Giving a presentation based on the chosen papers.
