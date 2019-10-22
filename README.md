@@ -41,7 +41,7 @@ Full participation in the course entails:
 ## Literature
 
 * [Andreas Abel's habilitation thesis (2013)](http://www.cse.chalmers.se/~abela/habil.pdf)
-* [Normalization and Partial Evaluation. P Dybjer, A Filinski (2000)](https://link.springer.com/chapter/10.1007%2F3-540-45699-6_4)
+* [Peter Dybjer webpage on NbE](http://www.cse.chalmers.se/~peterd/papers/nbe.html)
 * [Sam Lindley's thesis (2005)](https://www.era.lib.ed.ac.uk/handle/1842/778)
 * [András Kovács' master thesis (2017)](https://github.com/AndrasKovacs/stlc-nbe/blob/separate-PSh/thesis.pdf)
 * [Intuitionistic model constructions and normalization proofs. T Coquand and P Dybjer (1993, 1997)](https://www.cambridge.org/core/journals/mathematical-structures-in-computer-science/article/intuitionistic-model-constructions-and-normalization-proofs/15AE4B790FF9E4B1998CE92054DBD3CF)
