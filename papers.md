@@ -10,6 +10,7 @@ Papers on NbE
 * [Normalization and the Yoneda Embedding](https://www.cambridge.org/core/journals/mathematical-structures-in-computer-science/article/normalization-and-the-yoneda-embedding/52CC6B0D0961F134ABF28BF6A824D45B). D Čubrić, P Dybjer, P Scott (1998)
 * [Term rewriting for normalization by evaluation](https://www.sciencedirect.com/science/article/pii/S0890540103000142). U Berger, M Eberl, and H Schwichtenberg (1999, 2003)
 * [Normalization and Partial Evaluation](https://link.springer.com/chapter/10.1007%2F3-540-45699-6_4). P Dybjer, A Filinski (2000)
+* [Semantic analysis of normalisation by evaluation for typed lambda calculus](https://dl.acm.org/citation.cfm?id=571161).  	M Fiore (2000)
 * [Normalization by evaluation for the computational lambda-calculus](https://link.springer.com/chapter/10.1007/3-540-45413-6_15). A Filinski (2001)
 * [Normalization by evaluation for typed lambda calculus with coproducts](https://ieeexplore.ieee.org/abstract/document/932506). T Altenkirch, P Dybjer, M Hofmann, and  P Scott (2001)
 * [Normalization by Evaluation with Typed Abstract Syntax](https://www.cambridge.org/core/journals/journal-of-functional-programming/article/normalization-by-evaluation-with-typed-abstract-syntax/EB9C84EDC74834E940111BC94D2E0481). O Danvy, M Rhiger, and K H Rose (2001, 2002)
