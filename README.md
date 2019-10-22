@@ -46,5 +46,5 @@ Full participation in the course entails:
 3. [Sam Lindley's thesis (2005)](https://www.era.lib.ed.ac.uk/handle/1842/778)
 4. [András Kovács' master thesis (2017)](https://github.com/AndrasKovacs/stlc-nbe/blob/separate-PSh/thesis.pdf)
 5. [Intuitionistic model constructions and normalization proofs. T Coquand and P Dybjer (1993, 1997)](https://www.cambridge.org/core/journals/mathematical-structures-in-computer-science/article/intuitionistic-model-constructions-and-normalization-proofs/15AE4B790FF9E4B1998CE92054DBD3CF)
-6. [Normalization and Partial Evaluation](http://www.cse.chalmers.se/~peterd/papers/Caminha.pdf)
-7. [Formal Neighbourhoods,Combinatory Bohm Trees,and Untyped Normalization by Evaluation (2008)](http://www.cse.chalmers.se/~peterd/papers/DybjerKuperberg2008.pdf)
+6. [Normalization and Partial Evaluation. P Dybjer and A Filinski (2000)](http://www.cse.chalmers.se/~peterd/papers/Caminha.pdf)
+7. [Formal Neighbourhoods, Combinatory Bohm Trees, and Untyped Normalization by Evaluation (2008)](http://www.cse.chalmers.se/~peterd/papers/DybjerKuperberg2008.pdf)
