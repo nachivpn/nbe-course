@@ -1,10 +1,10 @@
 # NbE @ Chalmers
 
-Course on Normalization by Evaluation (NbE) at the Chalmers CSE department, in principle for PhD students.
+Course on Normalization by Evaluation (NbE) at the Chalmers CSE department, in principle for PhD students, open for Master students.
 
 ## Course plan
 
-The course will take place during 2019 LP2 - LP3 starting 24th October until end of November. The proposed structure is three course meetings and a final presentation on chosen topics (see below). 
+The course will take place during 2019 LP1/2 starting 24th October until end of November. The proposed structure is three course meetings and a final presentation on chosen topics (see below). 
 
 ### Course meetings
 
@@ -19,7 +19,7 @@ The meetings will take place weekly every Friday in room (TBD), starting 25th Oc
 
 ### Presentation
 
-Every participant is expected to read atleast two papers from the [list of papers](papers.md), and give a presentation on them at the [Initial Types Club](https://github.com/InitialTypes/Club/wiki) meeting on the 28th of November. More details on the presentation to follow later.
+Every participant is expected to read at least two papers from the [list of papers](papers.md), and give a presentation on them at the [Initial Types Club](https://github.com/InitialTypes/Club/wiki) meeting on the 28th of November. More details on the presentation to follow later.
 
 ## Examination
 
