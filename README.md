@@ -1,37 +1,47 @@
 # NbE @ Chalmers
 
-Course on Normalization by Evaluation (NbE) at the Chalmers CSE department, in principle for PhD students, but also open for Master students.
+Course on [Normalization by Evaluation (NbE)](https://en.wikipedia.org/wiki/Normalisation_by_evaluation) at the Chalmers CSE department. In principle for PhD students, but also open for Master students. The course will take place during 2019 LP1/2 starting 28th October until end of LP2.
 
 ## Course plan
 
-The course will take place during 2019 LP1/2 starting 28th October until end of LP2. The proposed structure is three course meetings and a final presentation on chosen topics (see below). 
+This will be primarily a reading course. Every participant is expected to study at least two papers from the [list of papers](papers.md), and give a presentation on them in the end. The participant is also expected to write a short survey article summarizing the chosen papers.
 
-### Course meetings
+We will have three course meetings; the goal of which is to facilitate discussion on introductory topics. The meetings will help us establish familiarity of general NbE vocabulary and techniques, and hence aid studying the papers (which often have a specific technical focus).
 
-The meetings will take place weekly every Wednesday at 10 am in room (TBD). The goal of these meetings is to facilitate discussions on introductory topics. Here's a tentative schedule:
-
-| Date | Volunteer | Topic | Reading |
-|---|---|---|---|
-| 30 Oct | _ | Introduction to NbE for the simply-typed lambda calculus | Chapter 2 in [1] and Section 2 (upto 2.4) in [6] |
-|  6 Nov | _ | Introduction to NbE for untyped lambda calculus and combinators | Chapter 3 in [1] (untyped lambda calculus), and parts of [7] (untyped combinators) |
-| 13 Nov | _ | _ | _ |
-| 20 Nov | _ | Proving soundness of NbE | TBD |
-
-### Presentation
-
-Every participant is expected to read at least two papers from the [list of papers](papers.md), and give a presentation on them at the [Initial Types Club](https://github.com/InitialTypes/Club/wiki) meeting on the 28th of November. More details on the presentation to follow later.
 
 ## Examination
 
 Examiner: [Andreas Abel](http://www.cse.chalmers.se/~abela/)
 
-Credits: 4, but the final decision about how many credits the course gives rests with each participant’s respective examiner.
+The course will be assessed in three parts:
 
-The course will be examined based on the following criteria:
-
-- [ ] Attending a majority of the discussion sessions.
+- [ ] Attending a majority of the course meetings.
 - [ ] Giving a presentation based on the chosen papers.
 - [ ] Writing a survey article based on the chosen papers.
+
+Credits: 4, but the final decision about how many credits the course gives rests with each participant’s respective examiner. Please 
+
+#### Presentation
+
+More details on the presentation to follow later.
+
+#### Survey article
+
+More details on the survey article to follow later.
+
+
+## Schedule
+
+| Date, Time | Topic | Reading | Remark |
+|---|---|---|---|
+| 30 Oct, 10:00 | Introduction to NbE for the simply-typed lambda calculus | Chapter 2 in [1] and Section 2 (upto 2.4) in [6] | |
+|  6 Nov | Introduction to NbE for untyped lambda calculus and combinators | Chapter 3 in [1] (untyped lambda calculus), and parts of [7] (untyped combinators) | _ |
+| 13 Nov | _ | _ | _ |
+| 20 Nov | Proving soundness of NbE | TBD | _ |
+| 28 Nov | Presentation | _ | at the [Initial Types Club](https://github.com/InitialTypes/Club/wiki) meeting |
+| 6 Dec  | Deadline for first submission of survey | _ | _ |
+| 6 Dec  | Deadline for reviewig | _ | _ |
+| 20 Dec | Deadline for final submission |  | _ |
 
 ## Participants
 
