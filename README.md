@@ -13,13 +13,16 @@ We will have three course meetings; the goal of which is to facilitate discussio
 
 Examiner: [Andreas Abel](http://www.cse.chalmers.se/~abela/)
 
-The course will be assessed in three parts:
+The course will be assessed in four parts:
 
 - [ ] Attending a majority of the course meetings.
 - [ ] Giving a presentation based on the chosen papers.
 - [ ] Writing a survey article based on the chosen papers.
+- [ ] Writing a review for the suvey articles submitted by other participants.
 
-Credits: 4, but the final decision about how many credits the course gives rests with each participant’s respective examiner. Please 
+Credits: 4
+
+Note on credits: For PhD students, the final decision about how many credits the course gives rests with each participant’s respective examiner. For Masters students, the number of credits may vary; please contact Andreas.
 
 #### Presentation
 
@@ -34,13 +37,13 @@ More details on the survey article to follow later.
 
 | Date, Time | Topic | Reading | Remark |
 |---|---|---|---|
-| 30 Oct, 10:00 | Introduction to NbE for the simply-typed lambda calculus | Chapter 2 in [1] and Section 2 (upto 2.4) in [6] | |
-|  6 Nov | Introduction to NbE for untyped lambda calculus and combinators | Chapter 3 in [1] (untyped lambda calculus), and parts of [7] (untyped combinators) | _ |
+| 30 Oct, 10:00 | Introduction to NbE for the simply-typed lambda calculus | Chapter 2 in [1] and Section 2 (upto 2.4) in [2] | |
+|  6 Nov | Introduction to NbE for untyped lambda calculus and combinators | Chapter 3 in [1] (untyped lambda calculus), and parts of [5] (untyped combinators) | _ |
 | 13 Nov | _ | _ | _ |
 | 20 Nov | Proving soundness of NbE | TBD | _ |
 | 28 Nov | Presentation | _ | at the [Initial Types Club](https://github.com/InitialTypes/Club/wiki) meeting |
 | 6 Dec  | Deadline for first submission  | _ | _ |
-| 13 Dec | Deadline for reviewing others' submissions | _ | _ |
+| 13 Dec | Deadline for reviewing  | _ | _ |
 | 20 Dec | Deadline for final submission |  | _ |
 
 ## Participants
@@ -52,9 +55,9 @@ More details on the survey article to follow later.
 ## Literature
 
 1. [Andreas Abel's habilitation thesis (2013)](http://www.cse.chalmers.se/~abela/habil.pdf)
-2. [Peter Dybjer webpage on NbE](http://www.cse.chalmers.se/~peterd/papers/nbe.html)
-3. [Sam Lindley's thesis (2005)](https://www.era.lib.ed.ac.uk/handle/1842/778)
+2. [Normalization and Partial Evaluation. P Dybjer and A Filinski (2000)](http://www.cse.chalmers.se/~peterd/papers/Caminha.pdf)
+3. [Sam Lindley's PhD thesis (2005)](https://www.era.lib.ed.ac.uk/handle/1842/778)
 4. [András Kovács' master thesis (2017)](https://github.com/AndrasKovacs/stlc-nbe/blob/separate-PSh/thesis.pdf)
-5. [Intuitionistic model constructions and normalization proofs. T Coquand and P Dybjer (1993, 1997)](https://www.cambridge.org/core/journals/mathematical-structures-in-computer-science/article/intuitionistic-model-constructions-and-normalization-proofs/15AE4B790FF9E4B1998CE92054DBD3CF)
-6. [Normalization and Partial Evaluation. P Dybjer and A Filinski (2000)](http://www.cse.chalmers.se/~peterd/papers/Caminha.pdf)
-7. [Formal Neighbourhoods, Combinatory Bohm Trees, and Untyped Normalization by Evaluation (2008)](http://www.cse.chalmers.se/~peterd/papers/DybjerKuperberg2008.pdf)
+5. [Formal Neighbourhoods, Combinatory Bohm Trees, and Untyped Normalization by Evaluation (2008)](http://www.cse.chalmers.se/~peterd/papers/DybjerKuperberg2008.pdf)
+6. [Peter Dybjer's webpage on NbE](http://www.cse.chalmers.se/~peterd/papers/nbe.html)
+
