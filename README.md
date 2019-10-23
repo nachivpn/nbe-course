@@ -39,8 +39,8 @@ More details on the survey article to follow later.
 | 13 Nov | _ | _ | _ |
 | 20 Nov | Proving soundness of NbE | TBD | _ |
 | 28 Nov | Presentation | _ | at the [Initial Types Club](https://github.com/InitialTypes/Club/wiki) meeting |
-| 6 Dec  | Deadline for first submission of survey | _ | _ |
-| 6 Dec  | Deadline for reviewig | _ | _ |
+| 6 Dec  | Deadline for first submission  | _ | _ |
+| 13 Dec | Deadline for reviewing others' submissions | _ | _ |
 | 20 Dec | Deadline for final submission |  | _ |
 
 ## Participants
