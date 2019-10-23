@@ -1,21 +1,21 @@
 # NbE @ Chalmers
 
-Course on Normalization by Evaluation (NbE) at the Chalmers CSE department, in principle for PhD students, open for Master students.
+Course on Normalization by Evaluation (NbE) at the Chalmers CSE department, in principle for PhD students, but also open for Master students.
 
 ## Course plan
 
-The course will take place during 2019 LP1/2 starting 24th October until end of November. The proposed structure is three course meetings and a final presentation on chosen topics (see below). 
+The course will take place during 2019 LP1/2 starting 28th October until end of LP2. The proposed structure is three course meetings and a final presentation on chosen topics (see below). 
 
 ### Course meetings
 
-The meetings will take place weekly every Friday in room (TBD), starting 25th October. The goal of these meetings is to facilitate discussions on introductory topics. Here's a tentative schedule:
+The meetings will take place weekly every Wednesday at 10 am in room (TBD). The goal of these meetings is to facilitate discussions on introductory topics. Here's a tentative schedule:
 
-* Meeting 1 (25/10, 10:00): Introduction to NbE for the simply-typed lambda calculus
-  - Reading: Chapter 2 in [1] and Section 2 (upto 2.4) in [6]
-* Meeting 2 (1/11, 13:15): Introduction to NbE for untyped lambda calculus and combinators
-  - Reading: Chapter 3 in [1] (untyped lambda calculus), and parts of [7] (untyped combinators)
-* Meeting 3 (8/11, 10:00): Proving soundness of NbE
-  - Reading: TBD
+| Date | Volunteer | Topic | Reading |
+|---|---|---|---|
+| 30 Oct | _ | Introduction to NbE for the simply-typed lambda calculus | Chapter 2 in [1] and Section 2 (upto 2.4) in [6] |
+|  6 Nov | _ | Introduction to NbE for untyped lambda calculus and combinators | Chapter 3 in [1] (untyped lambda calculus), and parts of [7] (untyped combinators) |
+| 13 Nov | _ | _ | _ |
+| 20 Nov | _ | Proving soundness of NbE | TBD |
 
 ### Presentation
 
