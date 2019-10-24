@@ -19,3 +19,4 @@ This is not a fixed list, welcome to extend!
 * [Normalization by Evaluation for λ→2](https://link.springer.com/chapter/10.1007/978-3-540-24754-8_19). T Altenkirch and T Uustalu (2004)
 * [Normalization by Evaluation and Algebraic Effects](https://www.sciencedirect.com/science/article/pii/S1571066113000534). D Ahman, S Staton (2013)
 * [Normalization by gluing](https://www.jonmsterling.com/pdfs/gluing-note.pdf). J Sterling, B Spitters (2018)
+* [Normalization by Evaluation for Call-by-Push-Value and Polarized Lambda-Calculus](https://arxiv.org/abs/1902.06097). A Abel, C Sattler (2019)
