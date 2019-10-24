@@ -37,8 +37,8 @@ More details on the survey article to follow later.
 
 | Date, Time | Topic | Reading | Remark |
 |---|---|---|---|
-| 30 Oct, 10:00 | Introduction to NbE for the simply-typed lambda calculus | Chapter 2 in [1] and Section 2 (upto 2.4) in [2] | |
-|  6 Nov | Introduction to NbE for untyped lambda calculus and combinators | Chapter 3 in [1] (untyped lambda calculus), and parts of [5] (untyped combinators) | _ |
+| 30 Oct, 10:00 | Introduction to NbE for typed combinators | Section 1 and 2 in [2] | |
+|  6 Nov | Introduction to NbE for simply-typed and untyped lambda calculus | Chapter 2 and Chapter 3 in [1] | _ |
 | 13 Nov | _ | _ | _ |
 | 20 Nov | Proving soundness of NbE | TBD | _ |
 | 28 Nov | Presentation | _ | at the [Initial Types Club](https://github.com/InitialTypes/Club/wiki) meeting |
