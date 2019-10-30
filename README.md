@@ -22,7 +22,7 @@ The course will be assessed in four parts:
 
 Credits: 4
 
-Note on credits: For PhD students, the final decision about how many credits the course gives rests with each participant’s respective examiner. For Masters students, the number of credits may vary; please contact Andreas.
+Note on credits: For PhD students, the final decision about how many credits the course gives rests with each participant’s respective examiner. For Master students, the number of credits may vary; please contact Andreas.
 
 #### Presentation
 
