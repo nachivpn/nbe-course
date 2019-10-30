@@ -38,9 +38,9 @@ More details on the survey article to follow later.
 | Date, Time | Topic | Reading | Remark |
 |---|---|---|---|
 | 30 Oct, 10:00 | Introduction to NbE for typed combinators | Section 1 and 2 in [2] | EDIT 3128. Lead by Carlos. |
-|  4 Nov, 10:00 | Introduction to NbE for simply-typed and untyped lambda calculus | Chapter 2 and 3 in [1] | Lead by ? |
+| 4 Nov, 10:00 | Introduction to NbE for untyped lambda calculus | Chapter 3 in [1] | Lead by Fabian |
 | 13 Nov | _ | _ | _ |
-| 20 Nov | Proving soundness of NbE | TBD | Lead by ? |
+| 20 Nov | Introduction to NbE for simply-typed lambda calculus | Chapter 2 in [1] | Lead by ? |
 | 28 Nov | Presentation | _ | at the [Initial Types Club](https://github.com/InitialTypes/Club/wiki) meeting |
 | 6 Dec  | Deadline for first submission  | _ | _ |
 | 13 Dec | Deadline for reviewing  | _ | _ |
