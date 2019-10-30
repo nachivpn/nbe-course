@@ -18,7 +18,7 @@ The course will be assessed in four parts:
 - [ ] Attending a majority of the course meetings.
 - [ ] Giving a presentation based on the chosen papers.
 - [ ] Writing a survey article based on the chosen papers.
-- [ ] Writing a review for the suvey articles submitted by other participants.
+- [ ] Writing a review for the survey articles submitted by other participants.
 
 Credits: 4
 
