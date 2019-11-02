@@ -2,6 +2,11 @@
 
 Course on [Normalization by Evaluation (NbE)](https://en.wikipedia.org/wiki/Normalisation_by_evaluation) at the Chalmers CSE department. In principle for PhD students, but also open for Master students. The course will take place during 2019 LP1/2 starting 28th October until end of LP2.
 
+# Overview
+
+NbE is a normalization technique which is used to normalize terms in a language by interpreting it in an appropriate semantic model. For those of us who generally understand normalization as a syntactic transformation, typically realized using a rewriting system, this is a bit magical. The main goal of the course is to demystify NbE: Why and how does it work? We will study some general principles of NbE on the way and then dive into specific topics of interest.
+
+
 ## Course plan
 
 This will be primarily a reading course. Every participant is expected to study at least two papers from the [list of papers](papers.md), and give a presentation on them in the end. The participant is also expected to write a short survey article summarizing the chosen papers.
