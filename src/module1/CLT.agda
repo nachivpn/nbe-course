@@ -4,7 +4,9 @@ module CLT where
 
 open import Data.Nat using (ℕ ; zero ; suc)
 open import Data.Unit using (⊤ ; tt)
-open import Data.Product using (Σ ; _×_ ; _,_ ; proj₁ ; proj₂)
+open import Data.Product
+  using (Σ ; _×_ ; _,_)
+  renaming (proj₁ to π₁ ; proj₂ to π₂)
 open import Relation.Binary.PropositionalEquality
   using (_≡_ ; cong ; cong₂)
   renaming (refl to ≡-refl ; trans to ≡-trans ; sym to ≡-sym)
@@ -53,6 +55,26 @@ data _≈_ : Tm a → Tm a → Set where
   recs : {e : Tm a} {f : Tm (Nat ⇒ a ⇒ a)} {n : Tm Nat}
     → (Rec ∙ e ∙ f ∙ (Succ ∙ n)) ≈ (f ∙ n ∙ (Rec ∙ e ∙ f ∙ n))
 
+module SetoidUtil where
+
+  open import Relation.Binary
+    using (Setoid ; IsEquivalence)
+
+  open Setoid
+    renaming (_≈_ to _≈ₑ_)
+    using (Carrier ; isEquivalence)
+
+  Tms : (a : Ty) → Setoid _ _
+  Tms a .Carrier = Tm a
+  Tms a ._≈ₑ_     = _≈_
+  Tms a .isEquivalence .IsEquivalence.refl  = refl
+  Tms a .isEquivalence .IsEquivalence.sym   = sym
+  Tms a .isEquivalence .IsEquivalence.trans = trans
+
+  open import Relation.Binary.SetoidReasoning public
+
+open SetoidUtil
+
 ⟦_⟧ : Ty → Set
 ⟦  Nat  ⟧ = ℕ
 ⟦ a ⇒ b ⟧ = Tm (a ⇒ b) × (⟦ a ⟧ → ⟦ b ⟧)
@@ -65,27 +87,28 @@ reify {a ⇒ b} (t , _) = t
 app' : ⟦ a ⇒ b ⟧ → ⟦ a ⟧ → ⟦ b ⟧
 app' (_ , f) x = f x
 
-rec' : ⟦ a ⟧ → (ℕ → ⟦ a ⟧ → ⟦ a ⟧) → ℕ → ⟦ a ⟧
+rec' : ⟦ a ⟧ → ⟦ Nat ⇒ a ⇒ a ⟧ → ⟦ Nat ⟧ → ⟦ a ⟧
 rec' b f zero = b
-rec' b f (suc n) = f n (rec' b f n)
+rec' b f (suc n) = app' (app' f n) (rec' b f n)
 
 eval : Tm a → ⟦ a ⟧
 eval K    = K , λ x → (K ∙ reify x) , λ _ → x
-eval S    = S , λ { (g , g') →
-  (S ∙ g) , λ { (f , f') →
-    (S ∙ g ∙ f) , λ x →
-      app' (g' x) (f' x) } }
+eval S    = S , λ g →
+  (S ∙ reify g) , λ f →
+    (S ∙ reify g ∙ reify f) , λ x →
+      app' (app' g x) (app' f x)
 eval Zero = zero
 eval Succ = Succ , suc
 eval Rec  = Rec , λ b →
-  (Rec ∙ reify b) , λ { (f , f')  →
-    (Rec ∙ reify b ∙ f) , λ n →
-      rec' b (λ x → app' (f' x)) n }
+  (Rec ∙ reify b) , λ f  →
+    (Rec ∙ reify b ∙ reify f) , λ n →
+      rec' b f n
 eval (App t u) = app' (eval t) (eval u)
 
 norm : Tm a → Tm a
 norm t = reify (eval t)
 
+-- soundess of interpretation, i.e., ⟦_⟧ and eval
 sound : {t t' : Tm a} → t ≈ t' → eval t ≡ eval t'
 sound refl        = ≡-refl
 sound (sym p)     = ≡-sym (sound p)
@@ -107,42 +130,72 @@ Gl {a ⇒ b} f = ∀ (x : ⟦ a ⟧) → Gl x
   → (reify f ∙ reify x ≈ reify (app' f x))
   × Gl (app' f x)
 
-⟦_⟧ᵍ : Ty → Set
-⟦ a ⟧ᵍ = Σ ⟦ a ⟧ Gl
+-- application for glued values
+appg : {f : ⟦ a ⇒ b ⟧} {x : ⟦ a ⟧}
+  → Gl f → Gl x
+  → Gl (app' f x)
+appg fg xg = π₂ (fg _ xg)
 
-reifyIsHom : (fg : ⟦ a ⇒ b ⟧ᵍ) (ug : ⟦ a ⟧ᵍ)
-  → let f = proj₁ fg ; u = proj₁ ug in
-    reify f ∙ reify u ≈ reify (app' f u)
-reifyIsHom (f , p) (u , q) = proj₁ (p u q)
+-- primitive recursion for glued values
+recg : {x : ⟦ a ⟧} {f :  ⟦ Nat ⇒ a ⇒ a ⟧ } {n : ⟦ Nat ⟧}
+  → Gl x → Gl f → Gl n → Gl (rec' x f n)
+recg {n = zero}  xg fg ng = xg
+recg {n = suc n} xg fg ng =
+  appg (appg fg ng) (recg {n = n} xg fg ng)
 
-appg : ⟦ a ⇒ b ⟧ᵍ → ⟦ a ⟧ᵍ → ⟦ b ⟧ᵍ
-appg ((f , f') , p) (x , q) = (f' x) , proj₂ (p x q)
+-- homomorphism properties of reify
 
-recg : ⟦ a ⟧ᵍ → ⟦ Nat ⇒ a ⇒ a ⟧ᵍ → ℕ → ⟦ a ⟧ᵍ
-recg b f zero = b
-recg b f (suc n) = appg (appg f (n , _)) (recg b f n)
+homReify-app : {f : ⟦ a ⇒ b ⟧} {x : ⟦ a ⟧}
+  → Gl f → Gl x
+  → reify f ∙ reify x ≈ reify (app' f x)
+homReify-app fg xg = π₁ (fg _ xg)
 
+homReify-rec : {x : ⟦ a ⟧} {f : ⟦ Nat ⇒ a ⇒ a ⟧ } {n : ⟦ Nat ⟧}
+  → Gl x → Gl f → Gl n
+  → reify (app' (app' (eval Rec) x) f) ∙ reify n
+  ≈ reify (rec' x f n)
+homReify-rec {n = zero}  xg fg ng = rec0
+homReify-rec {x = x} {f} {n = suc n} xg fg ng =
+  begin⟨ Tms _ ⟩
+    reify (app' (app' (eval Rec) x) f) ∙ reify (suc n)
+                ≈⟨ refl ⟩
+    Rec ∙ (reify x) ∙ (reify f) ∙ (Succ ∙ (reify n))
+                ≈⟨ recs ⟩
+    (reify f ∙ reify n) ∙ (Rec ∙ reify x ∙ reify f ∙ reify n)
+                ≈⟨  app (homReify-app fg ng) refl ⟩
+    reify (app' f n) ∙ (reify (app' (app' (eval Rec) x) f) ∙ reify n)
+                ≈⟨ app refl (homReify-rec {n = n} xg fg _) ⟩
+    reify (app' f n) ∙ reify (rec' x f n)
+                ≈⟨ homReify-app (appg fg _) (recg {n = n} xg fg _)⟩
+    reify (rec' x f (suc n)) ∎
+
+open import Function
+
+-- evaluation produces a glued valus
 gl : (t : Tm a) →  Gl (eval t)
-gl K x p = refl , λ y q → redk , p
-gl S g p = refl , λ {f q → refl , λ x r →
-  -- pfffffttt... need to switch to eq. reasoning
-  trans reds
-    (trans
-      (app
-        (proj₁ (p _ r))
-        (proj₁ (q _ r)))
-      (proj₁ (proj₂ (p x r) (proj₂ f x) (proj₂ (q x r))))) , proj₂
-    (appg
-      (appg (g , p) (x , r))
-      (appg (f , q) (x , r))) }
+gl K x xg    = refl , λ x _ → redk , xg
 gl Zero      = tt
 gl Succ      = λ x _ → refl , tt
-gl Rec x p   = refl , λ f q → refl , λ n _ → {!!}
-gl (App t u) = proj₂ (gl t _ (gl u))
+gl (App t u) = π₂ (gl t _ (gl u))
 
-evalG : Tm a → ⟦ a ⟧ᵍ
-evalG {a} t = (eval t) , gl t
+gl S g gg    = refl , λ f fg → refl , λ x xg →
+  (begin⟨ Tms _ ⟩
+    reify (app' (app' (eval S) g) f) ∙ reify x  ≈⟨ refl ⟩
+    S  ∙ reify g ∙ reify f ∙ reify x            ≈⟨ reds ⟩
+    (reify g ∙ reify x) ∙ (reify f ∙ reify x)   ≈⟨ app (homReify-app gg xg) (homReify-app fg xg) ⟩
+    reify (app' g x) ∙ reify (app' f x)         ≈⟨ homReify-app (appg gg xg) (appg fg xg) ⟩
+    reify (app' (app' g x) (app' f x))          ≈⟨ refl ⟩
+    reify (app' (app' (app' (eval S) g) f) x)   ∎ )
+  , appg (appg gg xg) (appg fg xg)
 
+gl Rec x xg   = refl , (λ f fg → refl , λ n ng →
+  (begin⟨ Tms _ ⟩
+    reify (app' (app' (eval Rec) x) f) ∙ reify n   ≈⟨ homReify-rec {n = n} xg fg ng ⟩
+    reify (rec' x f n)                             ≈⟨ refl ⟩
+    reify (app' (app' (app' (eval Rec) x) f) n)    ∎)
+  , recg {n = n} xg fg ng)
+
+-- normalization is consistent w.r.t. ≈
 consistent : (t : Tm a) → t ≈ norm t
 consistent K         = refl
 consistent S         = refl
@@ -151,14 +204,16 @@ consistent Succ      = refl
 consistent Rec       = refl
 consistent (App t u) = trans
   (app (consistent t) (consistent u))
-  (reifyIsHom (evalG t) (evalG u))
+  (homReify-app (gl t) (gl u))
 
 ≡→≈ : {t t' : Tm a} → t ≡ t' → t ≈ t'
 ≡→≈ ≡-refl = refl
 
 unique-nf-back : {t t' : Tm a} → norm t ≡ norm t' → t ≈ t'
-unique-nf-back {t = t} {t'} p = trans (consistent t) (trans (≡→≈ p) (sym (consistent t')))
+unique-nf-back {t = t} {t'} p =
+  trans (consistent t) (trans (≡→≈ p) (sym (consistent t')))
 
+-- completeness of interpretation, i.e., ⟦_⟧ and eval
 complete : {t t' : Tm a} → eval t ≡ eval t' → t ≈ t'
 complete p = unique-nf-back (cong reify p)
 
@@ -212,7 +267,7 @@ module _ where
 
   R : Tm a → ⟦ a ⟧ → Set
   R {Nat}   n m = n ≈ reify m
-  R {a ⇒ b} t f = (t ≈ proj₁ f)
+  R {a ⇒ b} t f = (t ≈ π₁ f)
     × (∀ (u : Tm a) (u' : ⟦ a ⟧)
     → R u u'
     → R (t ∙ u) (app' f u'))
@@ -243,3 +298,29 @@ module _ where
   unpack : ⟦ a ⟧ → ⟦ a ⟧'
   unpack {Nat}   n       = n
   unpack {a ⇒ b} (_ , f) = λ x → unpack (f x)
+
+
+---------------------------------------
+-- Abstract specification of the story
+---------------------------------------
+
+⟦_⟧ᵍ : Ty → Set
+⟦ a ⟧ᵍ = Σ ⟦ a ⟧ Gl
+
+evalG : Tm a → ⟦ a ⟧ᵍ
+evalG {a} t = (eval t) , gl t
+
+_≡ᵍ_ : (x y : ⟦ a ⟧ᵍ) → Set
+_≡ᵍ_ x y = π₁ x ≡ π₁ y
+
+soundG : {t t' : Tm a} → t ≈ t' → (evalG t) ≡ᵍ evalG t'
+soundG p = sound p
+
+reifyG : ⟦ a ⟧ᵍ → Tm a
+reifyG v = reify (π₁ v)
+
+normG : Tm a → Tm a
+normG t = reifyG (evalG t)
+
+-- NOTES:
+-- * It looks like we get completeness from a stronger property (i.e., consistency)
