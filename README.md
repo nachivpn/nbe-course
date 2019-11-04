@@ -67,4 +67,5 @@ More details on the survey article to follow later.
 4. [András Kovács' master thesis (2017)](https://github.com/AndrasKovacs/stlc-nbe/blob/separate-PSh/thesis.pdf)
 5. [Formal Neighbourhoods, Combinatory Bohm Trees, and Untyped Normalization by Evaluation (2008)](http://www.cse.chalmers.se/~peterd/papers/DybjerKuperberg2008.pdf)
 6. [Peter Dybjer's webpage on NbE](http://www.cse.chalmers.se/~peterd/papers/nbe.html)
+7. [Normalization by Evaluation for Intuitionistic Propositional Logic - ITC lecture notes by Andreas Abel (2018)](https://andreasabel.github.io/ipl/nbeSum.pdf)
 
