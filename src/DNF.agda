@@ -1,4 +1,10 @@
-module DNF (I : Set) where
+module DNF where -- (I : Set) where
+
+-- 8< --
+open import Data.Nat
+I = ℕ
+infixr 20 _/\_ _\/_
+-- >8 --
 
 open import Data.Sum
 open import Relation.Nullary
