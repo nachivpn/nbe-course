@@ -466,7 +466,6 @@ module WeakNorm where
     unique-norm : norm u ≡ norm u'
     unique-norm = unique-nf-forth u≈u'
 
-
 -- Random experiments below, might not make any sense
 
 -----------------------------------------------
@@ -493,20 +492,79 @@ module _ where
   app (bwd x ◅ p) (bwd y ◅ q)
     = trans (bwd (app1 x) ◅ bwd (app2 y) ◅ refl) (app p q)
 
+  -- logical relations for proving consistency
   R : Tm a → ⟦ a ⟧ → Set
   R {Nat}   n m = n ≈ reifyt m
-  R {a ⇒ b} t f = (t ≈ reifyt f)
-    × (∀ (u : Tm a) (u' : ⟦ a ⟧)
+  R {a ⇒ b} t f = t ≈ reifyt f
+    × ({u : Tm a} {u' : ⟦ a ⟧}
     → R u u'
     → R (t ∙ u) (app' f u'))
 
+  -- R implies _≈_ (by reifying the value on right)
+  -- (the whole purpose of R!)
+  R-reifies : {t : Tm a} {x : ⟦ a ⟧}
+    → R t x
+    → t ≈ reifyt x
+  R-reifies {Nat}   p       = p
+  R-reifies {a ⇒ b} (p , _) = p
+
+  -- invariance lemma
   R-resp-≈ : {f g : Tm a} {x : ⟦ a ⟧}
     → f ≈ g
     → R f x
     → R g x
   R-resp-≈ {Nat} f≈g rfx = trans (sym f≈g) rfx
   R-resp-≈ {a ⇒ a₁} p (q , r) = trans (sym p) q ,
-    λ u u' y → R-resp-≈ (app p refl) (r u u' y)
+    λ y → R-resp-≈ (app p refl) (r y)
+
+  -- NOTE: Interesting to see that proving invariance _requires_ sym
+
+  -- syntactic application is related to semantic application
+  R-app : {t : Tm (a ⇒ b)} {f : ⟦ a ⇒ b ⟧}
+    {u : Tm a} {x : ⟦ a ⟧}
+    → R t f
+    → R u x
+    → R (t ∙ u) (app' f x)
+  R-app (p , q) r = q r
+
+  -- syntactic recursion is related to semantic recursion
+  R-rec : {e : Tm a} {v : ⟦ a ⟧}
+    {t : Tm (Nat ⇒ a ⇒ a)} {f : ⟦ Nat ⇒ a ⇒ a ⟧}
+    {n : Tm Nat} {m : ⟦ Nat ⟧}
+    → R e v
+    → R t f
+    → R n m
+    → R (Rec ∙ e ∙ t  ∙ n) (rec' v f m)
+  R-rec {m = zero} p q r
+    = R-resp-≈ (sym (trans (app refl r) ((⟶→≈ rec0)))) p
+  R-rec {m = suc m} p q r
+    = R-resp-≈
+        (sym (trans (app refl r) (⟶→≈ recs)))
+        (R-app (R-app q refl) (R-rec {m = m} p q refl))
+
+  -- fundamental theorem of R
+  -- i.e., a term is related to its interpretation
+  fund : (t : Tm a) → R t (eval t)
+  fund K = refl , λ p →
+    (app refl (R-reifies p)) , λ q →
+      R-resp-≈ (sym (⟶→≈ redk)) p
+  fund S = refl , λ p →
+    app refl (R-reifies p) , λ q →
+      (app (app refl (R-reifies p)) (R-reifies q)) , λ r →
+        R-resp-≈ (sym (⟶→≈ reds)) (R-app (R-app p r) (R-app q r))
+  fund Zero = refl
+  fund Succ
+    = refl , λ p → (app refl p)
+  fund Rec
+    = refl , λ p →
+      (app refl (R-reifies p)) , λ q →
+        (app (app refl (R-reifies p)) (R-reifies q)) , λ {_} {n} r →
+          R-rec {m = n} p q r
+  fund (App t u) = R-app (fund t) (fund u)
+
+  -- proof of consistency using R
+  consistency' : (t : Tm a) → t ≈ em (norm t)
+  consistency' t = R-reifies (fund t)
 
 ---------------------------------------
 -- Abstract specification of the story
@@ -531,3 +589,38 @@ module _ where
 
   normG : Tm a → Tm a
   normG t = reifyG (evalG t)
+
+-----------------------------
+-- Intensional normalization
+-----------------------------
+
+module _ where
+
+  -- see pg. 1 of "Semantic analysis of normalisation by
+  -- evaluation for typed lambda calculus" by M. Fiore 2002
+
+  -- 1. stability
+  stability : (n : Nf a) → norm (em n) ≡ n
+  stability Zero = ≡-refl
+  stability Succ = ≡-refl
+  stability (Succ∙ n) = cong Succ∙ (stability n)
+  stability K = ≡-refl
+  stability (K∙ n) = cong K∙ (stability n)
+  stability S = ≡-refl
+  stability (S∙ n) = cong S∙ (stability n)
+  stability (S∙∙ m n) = cong₂ S∙∙ (stability m) (stability n)
+  stability Rec = ≡-refl
+  stability (Rec∙ n) = cong Rec∙ (stability n)
+  stability (Rec∙∙ m n) = cong₂ Rec∙∙ (stability m) (stability n)
+
+  -- 2. consistency (above)
+  -- 3. unique-nf-forth (above)
+
+  -- corollaries
+  private
+    -- if and only if
+    _↔_ : Set → Set → Set
+    A ↔ B = (A → B) × (B → A)
+
+  unique-nf : {t t' : Tm a} → (t ≈ t') ↔ (norm t ≡ norm t')
+  unique-nf = unique-nf-forth , unique-nf-back
