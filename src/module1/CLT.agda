@@ -468,10 +468,6 @@ module WeakNorm where
 
 -- Random experiments below, might not make any sense
 
------------------------------------------------
--- Proving consistency using logical relations
------------------------------------------------
-
 module _ where
 
   app : {t t' : Tm (a ⇒ b)} {u u' : Tm a}
@@ -492,34 +488,43 @@ module _ where
   app (bwd x ◅ p) (bwd y ◅ q)
     = trans (bwd (app1 x) ◅ bwd (app2 y) ◅ refl) (app p q)
 
+-----------------------------------------------
+-- Proving consistency using logical relations
+-----------------------------------------------
+
+module _ where
+
   -- logical relations for proving consistency
   R : Tm a → ⟦ a ⟧ → Set
-  R {Nat}   n m = n ≈ reifyt m
-  R {a ⇒ b} t f = t ≈ reifyt f
+  R {Nat}   n m = n ⟶* reifyt m
+  R {a ⇒ b} t f = t ⟶* reifyt f
     × ({u : Tm a} {u' : ⟦ a ⟧}
     → R u u'
     → R (t ∙ u) (app' f u'))
 
-  -- R implies _≈_ (by reifying the value on right)
+  -- R implies reduction by _⟶*_ (by reifying the value on right)
   -- (the whole purpose of R!)
-  R-reifies : {t : Tm a} {x : ⟦ a ⟧}
+  R-reduces : {t : Tm a} {x : ⟦ a ⟧}
     → R t x
-    → t ≈ reifyt x
-  R-reifies {Nat}   p       = p
-  R-reifies {a ⇒ b} (p , _) = p
+    → t ⟶* reifyt x
+  R-reduces {Nat}   p       = p
+  R-reduces {a ⇒ b} (p , _) = p
+
+  -- Note: Due to `R-reduces`, we may simply
+  -- say "t reduces to v" for `R t v`
+  -- instead of "t is related by R to v"
 
   -- invariance lemma
   R-resp-≈ : {f g : Tm a} {x : ⟦ a ⟧}
-    → f ≈ g
+    → g ⟶* f
     → R f x
     → R g x
-  R-resp-≈ {Nat} f≈g rfx = trans (sym f≈g) rfx
-  R-resp-≈ {a ⇒ a₁} p (q , r) = trans (sym p) q ,
-    λ y → R-resp-≈ (app p refl) (r y)
+  R-resp-≈ {Nat} g≈f rfx
+    = trans g≈f rfx
+  R-resp-≈ {_ ⇒ _} p   (q , r)
+    = trans p q , λ y → R-resp-≈ (app* p refl) (r y)
 
-  -- NOTE: Interesting to see that proving invariance _requires_ sym
-
-  -- syntactic application is related to semantic application
+  -- syntactic application reduces to semantic application
   R-app : {t : Tm (a ⇒ b)} {f : ⟦ a ⇒ b ⟧}
     {u : Tm a} {x : ⟦ a ⟧}
     → R t f
@@ -527,7 +532,7 @@ module _ where
     → R (t ∙ u) (app' f x)
   R-app (p , q) r = q r
 
-  -- syntactic recursion is related to semantic recursion
+  -- syntactic recursion reduces to semantic recursion
   R-rec : {e : Tm a} {v : ⟦ a ⟧}
     {t : Tm (Nat ⇒ a ⇒ a)} {f : ⟦ Nat ⇒ a ⇒ a ⟧}
     {n : Tm Nat} {m : ⟦ Nat ⟧}
@@ -536,35 +541,39 @@ module _ where
     → R n m
     → R (Rec ∙ e ∙ t  ∙ n) (rec' v f m)
   R-rec {m = zero} p q r
-    = R-resp-≈ (sym (trans (app refl r) ((⟶→≈ rec0)))) p
+    = R-resp-≈ (trans (app* refl r) (lift rec0)) p
   R-rec {m = suc m} p q r
     = R-resp-≈
-        (sym (trans (app refl r) (⟶→≈ recs)))
+        (trans (app* refl r) (lift recs))
         (R-app (R-app q refl) (R-rec {m = m} p q refl))
 
   -- fundamental theorem of R
-  -- i.e., a term is related to its interpretation
+  -- i.e., a term reduces to its interpretation
   fund : (t : Tm a) → R t (eval t)
   fund K = refl , λ p →
-    (app refl (R-reifies p)) , λ q →
-      R-resp-≈ (sym (⟶→≈ redk)) p
+    (app* refl (R-reduces p)) , λ q →
+      R-resp-≈ (lift redk) p
   fund S = refl , λ p →
-    app refl (R-reifies p) , λ q →
-      (app (app refl (R-reifies p)) (R-reifies q)) , λ r →
-        R-resp-≈ (sym (⟶→≈ reds)) (R-app (R-app p r) (R-app q r))
+    app* refl (R-reduces p) , λ q →
+      (app* (app* refl (R-reduces p)) (R-reduces q)) , λ r →
+        R-resp-≈ (lift reds) (R-app (R-app p r) (R-app q r))
   fund Zero = refl
   fund Succ
-    = refl , λ p → (app refl p)
+    = refl , λ p → (app* refl p)
   fund Rec
     = refl , λ p →
-      (app refl (R-reifies p)) , λ q →
-        (app (app refl (R-reifies p)) (R-reifies q)) , λ {_} {n} r →
+      (app* refl (R-reduces p)) , λ q →
+        (app* (app* refl (R-reduces p)) (R-reduces q)) , λ {_} {n} r →
           R-rec {m = n} p q r
   fund (App t u) = R-app (fund t) (fund u)
 
-  -- proof of consistency using R
-  consistency' : (t : Tm a) → t ≈ em (norm t)
-  consistency' t = R-reifies (fund t)
+  -- proof of consistency by R
+
+  consistency-red*-by-R : (t : Tm a) → t ⟶* em (norm t)
+  consistency-red*-by-R t = R-reduces (fund t)
+
+  consistency-by-R : (t : Tm a) → t ≈ em (norm t)
+  consistency-by-R t = ⟶*→≈ (consistency-red*-by-R t)
 
 ---------------------------------------
 -- Abstract specification of the story
@@ -623,4 +632,4 @@ module _ where
     A ↔ B = (A → B) × (B → A)
 
   unique-nf : {t t' : Tm a} → (t ≈ t') ↔ (norm t ≡ norm t')
-  unique-nf = unique-nf-forth , unique-nf-back
+  unique-nf = unique-nf-forth {- 3 -} , unique-nf-back {- from 2 -}
