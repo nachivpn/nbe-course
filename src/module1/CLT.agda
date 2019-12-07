@@ -19,15 +19,18 @@ open import Relation.Binary.Construct.Closure.Equivalence
   renaming (isEquivalence to EqClosureIsEquivalence)
 open import Data.Sum
   using ()
-  renaming (inj₁ to fwd; inj₂ to bwd)
+  renaming (inj₁ to fwd ; inj₂ to bwd)
+open import Data.Sum
+  using (_⊎_ ; inj₁ ; inj₂ ; [_,_]′)
 
 open Star renaming (ε to refl)
 
+infixl 6 _+_
 infixr 5 _⇒_
 
 data Ty : Set where
   Nat : Ty
-  _⇒_ : Ty →  Ty → Ty
+  _⇒_ _+_ : Ty →  Ty → Ty
 
 variable
   a b c : Ty
@@ -39,6 +42,9 @@ data Tm : Ty → Set where
   Succ : Tm (Nat ⇒ Nat)
   Rec  : Tm (a ⇒ (Nat ⇒ a ⇒ a) ⇒ Nat ⇒ a)
   App  : Tm (a ⇒ b) → Tm a → Tm b
+  Inl  : Tm (a ⇒ a + b)
+  Inr  : Tm (b ⇒ a + b)
+  Case : Tm ((a ⇒ c) ⇒ (b ⇒ c) ⇒ (a + b) ⇒ c)
 
 infixl 5 _∙_
 
@@ -61,6 +67,15 @@ data Nf : Ty → Set where
   Rec   : Nf (a ⇒ (Nat ⇒ a ⇒ a) ⇒ Nat ⇒ a)
   Rec∙  : (n : Nf a) → Nf ((Nat ⇒ a ⇒ a) ⇒ Nat ⇒ a)
   Rec∙∙ : (m : Nf a) → (n : Nf (Nat ⇒ a ⇒ a)) → Nf (Nat ⇒ a)
+  -- In*-terms
+  Inl    : Nf (a ⇒ a + b)
+  Inr    : Nf (b ⇒ a + b)
+  Inl∙   : Nf a → Nf (a + b)
+  Inr∙   : Nf b → Nf (a + b)
+  -- Case-terms
+  Case   : Nf ((a ⇒ c) ⇒ (b ⇒ c) ⇒ (a + b) ⇒ c)
+  Case∙  : Nf (a ⇒ c) → Nf ((b ⇒ c) ⇒ (a + b) ⇒ c)
+  Case∙∙ : Nf (a ⇒ c) → Nf (b ⇒ c) → Nf (a + b ⇒ c)
 
 -- embed normal forms to terms
 em : Nf a → Tm a
@@ -75,6 +90,13 @@ em (S∙∙ m n) = S ∙ (em m) ∙ (em n)
 em Rec = Rec
 em (Rec∙ n) = Rec ∙ (em n)
 em (Rec∙∙ m n) = Rec ∙ (em m) ∙ (em n)
+em Inl      = Inl
+em Inr      = Inr
+em (Inl∙ n) = Inl ∙ em n
+em (Inr∙ n) = Inr ∙ em n
+em Case         = Case
+em (Case∙ n)    = Case ∙ (em n)
+em (Case∙∙ m n) = Case ∙ (em m) ∙ (em n)
 
 -- small-step reduction relation
 data _⟶_ : Tm a → Tm a → Set where
@@ -88,10 +110,21 @@ data _⟶_ : Tm a → Tm a → Set where
      → (Rec ∙ e ∙ f ∙ (Succ ∙ n)) ⟶ (f ∙ n ∙ (Rec ∙ e ∙ f ∙ n))
   app1  : {t t' : Tm (a ⇒ b)} {u : Tm a}
     → t ⟶ t'
-    → App t u ⟶ App t' u
+    → (t ∙ u) ⟶ (t' ∙ u)
   app2  : {t : Tm (a ⇒ b)} {u u' : Tm a}
     → u ⟶ u'
-    → App t u ⟶ App t u'
+    → (t ∙ u) ⟶ (t ∙ u')
+  redl : {s : Tm a} {f : Tm (a ⇒ c)} {g : Tm (b ⇒ c)}
+    → (Case ∙ f ∙ g ∙ (Inl ∙ s)) ⟶ (f ∙ s)
+  redr : {s : Tm b} {f : Tm (a ⇒ c)} {g : Tm (b ⇒ c)}
+    → (Case ∙ f ∙ g ∙ (Inr ∙ s)) ⟶ (g ∙ s)
+  inl  : {t t' : Tm a}
+    → t ⟶ t'
+    → (Inl {a} {b} ∙ t) ⟶ (Inl ∙ t')
+  inr  : {t t' : Tm b}
+    → t ⟶ t'
+    → (Inr {b} {a} ∙ t) ⟶ (Inr ∙ t')
+
 
 -- NOTE: The relation _⟶_ is *not* deterministic
 -- since we can make a choice when we encounter `App`
@@ -115,11 +148,14 @@ module Norm where
   ⟦_⟧ : Ty → Set
   ⟦  Nat  ⟧ = ℕ
   ⟦ a ⇒ b ⟧ = Nf (a ⇒ b) × (⟦ a ⟧ → ⟦ b ⟧)
+  ⟦ a + b ⟧ = ⟦ a ⟧ ⊎ ⟦ b ⟧
 
   reify : ⟦ a ⟧ → Nf a
-  reify {Nat}   zero    = Zero
-  reify {Nat}   (suc x) = Succ∙ (reify x)
-  reify {a ⇒ b} (t , _) = t
+  reify {Nat}   zero     = Zero
+  reify {Nat}   (suc x)  = Succ∙ (reify x)
+  reify {a ⇒ b} (t , _)  = t
+  reify {a + b} (inj₁ x) = Inl∙ (reify x)
+  reify {a + b} (inj₂ y) = Inr∙ (reify y)
 
   -- semantic application
   app' : ⟦ a ⇒ b ⟧ → ⟦ a ⟧ → ⟦ b ⟧
@@ -129,6 +165,10 @@ module Norm where
   rec' : ⟦ a ⟧ → ⟦ Nat ⇒ a ⇒ a ⟧ → ⟦ Nat ⟧ → ⟦ a ⟧
   rec' b f zero = b
   rec' b f (suc n) = app' (app' f n) (rec' b f n)
+
+  case' : ⟦ a ⇒ c ⟧ → ⟦ b ⇒ c ⟧ → ⟦ a + b ⟧ → ⟦ c ⟧
+  case' f g (inj₁ x) = app' f x
+  case' f g (inj₂ y) = app' g y
 
   -- interpretation of terms
   eval : Tm a → ⟦ a ⟧
@@ -144,11 +184,18 @@ module Norm where
       Rec∙∙ (reify b) (reify f) , λ n →
         rec' b f n
   eval (App t u) = app' (eval t) (eval u)
+  eval Inl = Inl , inj₁
+  eval Inr = Inr , inj₂
+  eval (Case)  = Case , λ f →
+    Case∙ (reify f) , λ g →
+      Case∙∙ (reify f) (reify g) , λ s →
+        case' f g s
 
   norm : Tm a → Nf a
   norm t = reify (eval t)
 
 open Norm
+
 
 module Utilities where
 
@@ -180,6 +227,7 @@ module Utilities where
   app* refl    refl    = refl
   app* refl    (x ◅ q) = (app2 x) ◅ (app* refl q)
   app* (x ◅ p) q       = (app1 x) ◅ (app* p q)
+
 
 open Utilities
 
@@ -214,6 +262,12 @@ module Soundness where
     = cong (λ x → app' x _) (sound-red p)
   sound-red (app2 {t = t} p)
     = cong (λ x → app' (eval t) x) (sound-red p)
+  sound-red redl = ≡-refl
+  sound-red redr = ≡-refl
+  sound-red (inl p)
+    = cong inj₁ (sound-red p)
+  sound-red (inr p)
+    = cong inj₂ (sound-red p)
 
   -- soundness of conversion in the model
   sound : {t t' : Tm a} → t ≈ t' → eval t ≡ eval t'
@@ -242,6 +296,8 @@ module Completeness where
   Gl {a ⇒ b} f = ∀ (x : ⟦ a ⟧) → Gl x
     → (reifyt f ∙ reifyt x ⟶* reifyt (app' f x))
     × Gl (app' f x)
+  Gl {a + b} (inj₁ x) = Gl x
+  Gl {a + b} (inj₂ y) = Gl y
 
   -- application for glued values
   appg : {f : ⟦ a ⇒ b ⟧} {x : ⟦ a ⟧}
@@ -255,6 +311,11 @@ module Completeness where
   recg {n = zero}  xg fg ng = xg
   recg {n = suc n} xg fg ng =
     appg (appg fg ng) (recg {n = n} xg fg ng)
+
+  caseg : {f : ⟦ a ⇒ c ⟧} → {g : ⟦ b ⇒ c ⟧} → {s : ⟦ a + b ⟧}
+    → Gl f → Gl g → Gl s → Gl (case' f g s)
+  caseg {s = inj₁ x} fg gg sg = appg fg sg
+  caseg {s = inj₂ y} fg gg sg = appg gg sg
 
   -- homomorphism properties of reify
 
@@ -292,6 +353,10 @@ module Completeness where
   gl Rec x xg   = refl , (λ f fg →
     refl , λ n ng →
       homReify-rec {n = n} xg fg ng , (recg {n = n} xg fg ng))
+  gl Inl x xg = refl , xg
+  gl Inr x xg = refl , xg
+  gl (Case) f fg = refl , λ g gg →
+    refl , λ s sg → {!!} , caseg {s = s} fg gg sg
 
   -- normalization is consistent with reduction (_⟶*_)
   -- or, loosely speaking, `norm` transforms by reduction
@@ -304,6 +369,9 @@ module Completeness where
   consistent-red* (App t u) = trans
     (app* (consistent-red* t) (consistent-red* u))
     (homReify-app (gl t) (gl u))
+  consistent-red* Inl  = refl
+  consistent-red* Inr  = refl
+  consistent-red* Case = refl
 
   -- normalization is consistent with conversion
   consistent : (t : Tm a) → t ≈ em (norm t)
@@ -339,6 +407,15 @@ module Decidability where
   ≡-ty-dec {a ⇒ a₁} {b ⇒ b₁} | yes p | no ¬q = no (λ { ≡-refl → ¬q ≡-refl})
   ≡-ty-dec {a ⇒ a₁} {b ⇒ b₁} | no ¬p | yes q = no (λ { ≡-refl → ¬p ≡-refl})
   ≡-ty-dec {a ⇒ a₁} {b ⇒ b₁} | no ¬p | no ¬q = no λ { ≡-refl → ¬q ≡-refl}
+  ≡-ty-dec {Nat} {b + b₁} = no (λ ())
+  ≡-ty-dec {a ⇒ a₁} {b + b₁} = no (λ ())
+  ≡-ty-dec {a + a₁} {Nat} = no (λ ())
+  ≡-ty-dec {a + a₁} {b ⇒ b₁} = no (λ ())
+  ≡-ty-dec {a + a₁} {b + b₁} with ≡-ty-dec {a} {b} | ≡-ty-dec {a₁} {b₁}
+  ≡-ty-dec {a + a₁} {b + b₁} | yes p | yes q = yes (cong₂ _+_ p q)
+  ≡-ty-dec {a + a₁} {b + b₁} | yes p | no ¬q = no (λ { ≡-refl → ¬q ≡-refl})
+  ≡-ty-dec {a + a₁} {b + b₁} | no ¬p | yes q = no (λ { ≡-refl → ¬p ≡-refl})
+  ≡-ty-dec {a + a₁} {b + b₁} | no ¬p | no ¬q = no (λ { ≡-refl → ¬q ≡-refl})
 
   -- syntactic equality of normal forms is decidable
   ≡-nf-dec : (n n' : Nf a) → Dec (n ≡ n')
@@ -411,6 +488,51 @@ module Decidability where
   ≡-nf-dec (Rec∙∙ n m) (Rec∙∙ n' m') | yes p | yes q = yes (cong₂ Rec∙∙ p q)
   ≡-nf-dec (Rec∙∙ n m) (Rec∙∙ n' m') | yes p | no ¬p = no λ { ≡-refl → ¬p ≡-refl }
   ≡-nf-dec (Rec∙∙ n m) (Rec∙∙ n' m') | no ¬p | _     = no λ { ≡-refl → ¬p ≡-refl }
+  ≡-nf-dec K (Case∙∙ n' n'') = no (λ ())
+  ≡-nf-dec (K∙ n) Inl = no (λ ())
+  ≡-nf-dec (K∙ n) Inr = no (λ ())
+  ≡-nf-dec (K∙ n) Case = no (λ ())
+  ≡-nf-dec (K∙ n) (Case∙ n') = no (λ ())
+  ≡-nf-dec (K∙ n) (Case∙∙ n' n'') = no (λ ())
+  ≡-nf-dec (S∙ n) Case = no (λ ())
+  ≡-nf-dec (S∙∙ n n₁) Inl = no (λ ())
+  ≡-nf-dec (S∙∙ n n₁) Inr = no (λ ())
+  ≡-nf-dec (S∙∙ n n₁) Case = no (λ ())
+  ≡-nf-dec (S∙∙ n n₁) (Case∙ n') = no (λ ())
+  ≡-nf-dec (S∙∙ n n₁) (Case∙∙ n' n'') = no (λ ())
+  ≡-nf-dec Rec (Case∙∙ n' n'') = no (λ ())
+  ≡-nf-dec (Rec∙∙ n n₁) Inl = no (λ ())
+  ≡-nf-dec (Rec∙∙ n n₁) Inr = no (λ ())
+  ≡-nf-dec Inl (K∙ n') = no (λ ())
+  ≡-nf-dec Inl (S∙∙ n' n'') = no (λ ())
+  ≡-nf-dec Inl (Rec∙∙ n' n'') = no (λ ())
+  ≡-nf-dec Inl Inl = yes ≡-refl
+  ≡-nf-dec Inl Inr = no (λ ())
+  ≡-nf-dec Inl (Case∙∙ n' n'') = no (λ ())
+  ≡-nf-dec Inr (K∙ n') = no (λ ())
+  ≡-nf-dec Inr (S∙∙ n' n'') = no (λ ())
+  ≡-nf-dec Inr (Rec∙∙ n' n'') = no (λ ())
+  ≡-nf-dec Inr Inl = no (λ ())
+  ≡-nf-dec Inr Inr = yes ≡-refl
+  ≡-nf-dec Inr (Case∙∙ n' n'') = no (λ ())
+  ≡-nf-dec (Inl∙ n) (Inl∙ n') = {!!}
+  ≡-nf-dec (Inl∙ n) (Inr∙ n') = no (λ ())
+  ≡-nf-dec (Inr∙ n) (Inl∙ n') = no (λ ())
+  ≡-nf-dec (Inr∙ n) (Inr∙ n') = {!!}
+  ≡-nf-dec Case (K∙ n') = no (λ ())
+  ≡-nf-dec Case (S∙ n') = no (λ ())
+  ≡-nf-dec Case (S∙∙ n' n'') = no (λ ())
+  ≡-nf-dec Case Case = yes ≡-refl
+  ≡-nf-dec (Case∙ n) (K∙ n') = no (λ ())
+  ≡-nf-dec (Case∙ n) (S∙∙ n' n'') = no (λ ())
+  ≡-nf-dec (Case∙ n) (Case∙ n') = {!!}
+  ≡-nf-dec (Case∙∙ n n₁) K = no (λ ())
+  ≡-nf-dec (Case∙∙ n n₁) (K∙ n') = no (λ ())
+  ≡-nf-dec (Case∙∙ n n₁) (S∙∙ n' n'') = no (λ ())
+  ≡-nf-dec (Case∙∙ n n₁) Rec = no (λ ())
+  ≡-nf-dec (Case∙∙ n n₁) Inl = no (λ ())
+  ≡-nf-dec (Case∙∙ n n₁) Inr = no (λ ())
+  ≡-nf-dec (Case∙∙ n n₁) (Case∙∙ n' n'') = {!!}
 
   -- convertibility of terms is decidable
   ≈-tm-dec : (t t' : Tm a) → Dec (t ≈ t')
@@ -445,6 +567,18 @@ module WeakNorm where
   nfDoesntReduce (Rec∙ n) (app2 p) = nfDoesntReduce n p
   nfDoesntReduce (Rec∙∙ m n) (app1 (app2 p)) = nfDoesntReduce m p
   nfDoesntReduce (Rec∙∙ m n) (app2 p) = nfDoesntReduce n p
+  nfDoesntReduce (S∙∙ m n) (app1 p) = nfDoesntReduce (S∙ m) p
+  nfDoesntReduce (Rec∙∙ m n) (app1 p) = nfDoesntReduce (Rec∙ m) p
+  nfDoesntReduce Inl ()
+  nfDoesntReduce Inr ()
+  nfDoesntReduce (Inl∙ n) (app2 p) = nfDoesntReduce n p
+  nfDoesntReduce (Inl∙ n) (inl p) = nfDoesntReduce n p
+  nfDoesntReduce (Inr∙ n) (app2 p) = nfDoesntReduce n p
+  nfDoesntReduce (Inr∙ n) (inr p) = nfDoesntReduce n p
+  nfDoesntReduce Case ()
+  nfDoesntReduce (Case∙ n) (app2 p) = nfDoesntReduce n p
+  nfDoesntReduce (Case∙∙ m n) (app1 p) = nfDoesntReduce (Case∙ m) p
+  nfDoesntReduce (Case∙∙ m n) (app2 p) = nfDoesntReduce n p
 
   weakNorm : ∀ (t : Tm a) → WeakNorm t
   weakNorm t = em (norm t) , consistent-red* _ , nfDoesntReduce _
@@ -465,6 +599,7 @@ module WeakNorm where
     -- u and u' normalize to a unique v
     unique-norm : norm u ≡ norm u'
     unique-norm = unique-nf-forth u≈u'
+
 
 -- Random experiments below, might not make any sense
 
@@ -501,6 +636,10 @@ module _ where
     × ({u : Tm a} {u' : ⟦ a ⟧}
     → R u u'
     → R (t ∙ u) (app' f u'))
+  R {a + b} t (inj₁ x)
+    = ∃ (λ u → R u x × t ⟶* Inl ∙ reifyt x )
+  R {a + b} t (inj₂ y)
+    = ∃ (λ u → R u y × t ⟶* Inr ∙ reifyt y )
 
   -- R implies reduction by _⟶*_ (by reifying the value on right)
   -- (the whole purpose of R!)
@@ -509,6 +648,8 @@ module _ where
     → t ⟶* reifyt x
   R-reduces {Nat}   p       = p
   R-reduces {a ⇒ b} (p , _) = p
+  R-reduces {a + b} {x = inj₁ _} (_ , _ , p) = p
+  R-reduces {a + b} {x = inj₂ _} (_ , _ , p) = p
 
   -- Note: Due to `R-reduces`, we may simply
   -- say "t reduces to v" for `R t v`
@@ -523,6 +664,10 @@ module _ where
     = trans g≈f rfx
   R-resp-≈ {_ ⇒ _} p   (q , r)
     = trans p q , λ y → R-resp-≈ (app* p refl) (r y)
+  R-resp-≈ {_ + _} {x = inj₁ _} p (u , q , r)
+    = u , q , trans p r
+  R-resp-≈ {_ + _} {x = inj₂ _} p (u , q , r)
+    = u , q , trans p r
 
   -- syntactic application reduces to semantic application
   R-app : {t : Tm (a ⇒ b)} {f : ⟦ a ⇒ b ⟧}
@@ -566,6 +711,11 @@ module _ where
         (app* (app* refl (R-reduces p)) (R-reduces q)) , λ {_} {n} r →
           R-rec {m = n} p q r
   fund (App t u) = R-app (fund t) (fund u)
+  fund Inl = refl , λ p →
+    _ , p , app* refl (R-reduces p)
+  fund Inr = refl , λ p →
+    _ , p , app* refl (R-reduces p)
+  fund Case = {!!}
 
   -- proof of consistency by R
 
@@ -621,6 +771,13 @@ module _ where
   stability Rec = ≡-refl
   stability (Rec∙ n) = cong Rec∙ (stability n)
   stability (Rec∙∙ m n) = cong₂ Rec∙∙ (stability m) (stability n)
+  stability Inl = ≡-refl
+  stability Inr = ≡-refl
+  stability (Inl∙ n) = cong Inl∙ (stability n)
+  stability (Inr∙ n) = cong Inr∙ (stability n)
+  stability Case = ≡-refl
+  stability (Case∙ n) = cong Case∙ (stability n)
+  stability (Case∙∙ m n) = cong₂ Case∙∙ (stability m) (stability n)
 
   -- 2. consistency (above)
   -- 3. unique-nf-forth (above)
