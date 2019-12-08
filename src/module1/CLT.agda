@@ -1,5 +1,3 @@
-{-# OPTIONS --allow-unsolved-metas #-}
-
 module CLT where
 
 -- stdlib imports
@@ -39,21 +37,18 @@ private
   variable
     a b c : Ty
 
+infixl 5 _∙_
+
 data Tm : Ty → Set where
   K    : Tm (a ⇒ b ⇒ a)
   S    : Tm ((a ⇒ b ⇒ c) ⇒ (a ⇒ b) ⇒ a ⇒ c)
   Zero : Tm Nat
   Succ : Tm (Nat ⇒ Nat)
   Rec  : Tm (a ⇒ (Nat ⇒ a ⇒ a) ⇒ Nat ⇒ a)
-  App  : Tm (a ⇒ b) → Tm a → Tm b
+  _∙_  : Tm (a ⇒ b) → Tm a → Tm b
   Inl  : Tm (a ⇒ a + b)
   Inr  : Tm (b ⇒ a + b)
   Case : Tm ((a ⇒ c) ⇒ (b ⇒ c) ⇒ (a + b) ⇒ c)
-
-infixl 5 _∙_
-
-_∙_ : Tm (a ⇒ b) → Tm a → Tm b
-_∙_ = App
 
 data Nf : Ty → Set where
   -- nats
@@ -83,21 +78,21 @@ data Nf : Ty → Set where
 
 -- embed normal forms to terms
 em : Nf a → Tm a
-em Zero = Zero
-em Succ = Succ
-em (Succ∙ n) = Succ ∙ em n
-em K = K
-em (K∙ n) = App K (em n)
-em S = S
-em (S∙ n) = S ∙ (em n)
-em (S∙∙ m n) = S ∙ (em m) ∙ (em n)
-em Rec = Rec
-em (Rec∙ n) = Rec ∙ (em n)
-em (Rec∙∙ m n) = Rec ∙ (em m) ∙ (em n)
-em Inl      = Inl
-em Inr      = Inr
-em (Inl∙ n) = Inl ∙ em n
-em (Inr∙ n) = Inr ∙ em n
+em Zero         = Zero
+em Succ         = Succ
+em (Succ∙ n)    = Succ ∙ em n
+em K            = K
+em (K∙ n)       = K ∙ (em n)
+em S            = S
+em (S∙ n)       = S ∙ (em n)
+em (S∙∙ m n)    = S ∙ (em m) ∙ (em n)
+em Rec          = Rec
+em (Rec∙ n)     = Rec ∙ (em n)
+em (Rec∙∙ m n)  = Rec ∙ (em m) ∙ (em n)
+em Inl          = Inl
+em Inr          = Inr
+em (Inl∙ n)     = Inl ∙ em n
+em (Inr∙ n)     = Inr ∙ em n
 em Case         = Case
 em (Case∙ n)    = Case ∙ (em n)
 em (Case∙∙ m n) = Case ∙ (em m) ∙ (em n)
@@ -128,7 +123,6 @@ data _⟶_ : Tm a → Tm a → Set where
   inr  : {t t' : Tm b}
     → t ⟶ t'
     → (Inr {b} {a} ∙ t) ⟶ (Inr ∙ t')
-
 
 -- NOTE: The relation _⟶_ is *not* deterministic
 -- since we can make a choice when we encounter `App`
@@ -161,18 +155,20 @@ module Norm where
   reify {a + b} (inj₁ x) = Inl∙ (reify x)
   reify {a + b} (inj₂ y) = Inr∙ (reify y)
 
+  infixl 5 _∙'_
+
   -- semantic application
-  app' : ⟦ a ⇒ b ⟧ → ⟦ a ⟧ → ⟦ b ⟧
-  app' (_ , f) x = f x
+  _∙'_ : ⟦ a ⇒ b ⟧ → ⟦ a ⟧ → ⟦ b ⟧
+  _∙'_ (_ , f) x = f x
 
   -- semantic recursion
   rec' : ⟦ a ⟧ → ⟦ Nat ⇒ a ⇒ a ⟧ → ⟦ Nat ⟧ → ⟦ a ⟧
   rec' b f zero = b
-  rec' b f (suc n) = app' (app' f n) (rec' b f n)
+  rec' b f (suc n) = f ∙' n ∙' (rec' b f n)
 
   case' : ⟦ a ⇒ c ⟧ → ⟦ b ⇒ c ⟧ → ⟦ a + b ⟧ → ⟦ c ⟧
-  case' f g (inj₁ x) = app' f x
-  case' f g (inj₂ y) = app' g y
+  case' f g (inj₁ x) = f ∙' x
+  case' f g (inj₂ y) = g ∙' y
 
   -- interpretation of terms
   eval : Tm a → ⟦ a ⟧
@@ -180,14 +176,14 @@ module Norm where
   eval S    = S , λ g →
     S∙ (reify g) , λ f →
       S∙∙ (reify g) (reify f) , λ x →
-        app' (app' g x) (app' f x)
+        (g ∙' x) ∙' (f ∙' x)
   eval Zero = zero
   eval Succ = Succ , suc
   eval Rec  = Rec , λ b →
     Rec∙ (reify b) , λ f  →
       Rec∙∙ (reify b) (reify f) , λ n →
         rec' b f n
-  eval (App t u) = app' (eval t) (eval u)
+  eval (t ∙ u) = (eval t) ∙' (eval u)
   eval Inl = Inl , inj₁
   eval Inr = Inr , inj₂
   eval (Case)  = Case , λ f →
@@ -226,7 +222,7 @@ module Utilities where
   app*  : {t t' : Tm (a ⇒ b)} {u u' : Tm a}
       → t ⟶* t'
       → u ⟶* u'
-      → App t u ⟶* App t' u'
+      → t ∙ u ⟶* t' ∙ u'
   app* refl    refl    = refl
   app* refl    (x ◅ q) = (app2 x) ◅ (app* refl q)
   app* (x ◅ p) q       = (app1 x) ◅ (app* p q)
@@ -261,9 +257,9 @@ module Soundness where
   sound-red rec0 = ≡-refl
   sound-red recs = ≡-refl
   sound-red (app1 p)
-    = cong (λ x → app' x _) (sound-red p)
+    = cong (λ x → x ∙' _) (sound-red p)
   sound-red (app2 {t = t} p)
-    = cong (λ x → app' (eval t) x) (sound-red p)
+    = cong (λ x → (eval t) ∙' x) (sound-red p)
   sound-red redl = ≡-refl
   sound-red redr = ≡-refl
   sound-red (inl p)
@@ -285,26 +281,27 @@ open Soundness
 
 module Completeness where
 
-  -- reify from model into terms (not just normal forms)
-  reifyt : ⟦ a ⟧ → Tm a
-  reifyt v = em (reify v)
+  -- quote from model into terms
+  -- p.s. cannot be named "quote" since it's an Agda keyword
+  quot : ⟦ a ⟧ → Tm a
+  quot v = em (reify v)
 
   -- a "submodel" (called glued model) equipped with a proof
-  -- that reify is homomorphic on the reduction relation _⟶*_
+  -- that quot is homomorphic on the reduction relation _⟶*_
   -- Note: this submodel acts as *necessary* technical device
   -- to prove consistency (see below)
   Gl : ⟦ a ⟧ → Set
   Gl {Nat}   n = ⊤
   Gl {a ⇒ b} f = ∀ (x : ⟦ a ⟧) → Gl x
-    → (reifyt f ∙ reifyt x ⟶* reifyt (app' f x))
-    × Gl (app' f x)
+    → (quot f ∙ quot x ⟶* quot (f ∙' x))
+    × Gl (f ∙' x)
   Gl {a + b} (inj₁ x) = Gl x
   Gl {a + b} (inj₂ y) = Gl y
 
   -- application for glued values
   appg : {f : ⟦ a ⇒ b ⟧} {x : ⟦ a ⟧}
     → Gl f → Gl x
-    → Gl (app' f x)
+    → Gl (f ∙' x)
   appg fg xg = π₂ (fg _ xg)
 
   -- primitive recursion for glued values
@@ -319,46 +316,53 @@ module Completeness where
   caseg {s = inj₁ x} fg gg sg = appg fg sg
   caseg {s = inj₂ y} fg gg sg = appg gg sg
 
-  -- homomorphism properties of reify
+  -- homomorphism properties of quot
 
-  homReify-app : {f : ⟦ a ⇒ b ⟧} {x : ⟦ a ⟧}
+  hom-app : {f : ⟦ a ⇒ b ⟧} {x : ⟦ a ⟧}
     → Gl f → Gl x
-    → reifyt f ∙ reifyt x ⟶* reifyt (app' f x)
-  homReify-app fg xg = π₁ (fg _ xg)
+    → quot f ∙ quot x ⟶* quot (f ∙' x)
+  hom-app fg xg = π₁ (fg _ xg)
 
-  homReify-rec : {x : ⟦ a ⟧} {f : ⟦ Nat ⇒ a ⇒ a ⟧ } {n : ⟦ Nat ⟧}
+  hom-rec : {x : ⟦ a ⟧} {f : ⟦ Nat ⇒ a ⇒ a ⟧ } {n : ⟦ Nat ⟧}
       → Gl x → Gl f → Gl n
-      → reifyt (app' (app' (eval Rec) x) f) ∙ reifyt n
-      ⟶* reifyt (rec' x f n)
-  homReify-rec {n = zero}  xg fg ng = lift rec0
-  homReify-rec {x = x} {f} {n = suc n} xg fg ng =
+      → quot (eval Rec ∙' x ∙' f) ∙ quot n
+      ⟶* quot (rec' x f n)
+  hom-rec {n = zero}  xg fg ng = lift rec0
+  hom-rec {x = x} {f} {n = suc n} xg fg ng =
         recs ◅ trans
-          (app* (homReify-app fg ng) (homReify-rec {n = n} xg fg _))
-          (homReify-app (appg fg _) (recg {n = n} xg fg _))
+          (app* (hom-app fg ng) (hom-rec {n = n} xg fg _))
+          (hom-app (appg fg _) (recg {n = n} xg fg _))
+
+  hom-case : {f : ⟦ a ⇒ c ⟧ } {g : ⟦ b ⇒ c ⟧} {s : ⟦ a + b ⟧}
+      → Gl f → Gl g → Gl s
+      → quot (eval Case ∙' f ∙' g) ∙ quot s
+      ⟶* quot (case' f g s)
+  hom-case {s = inj₁ x} fg gg sg = trans (lift redl) (hom-app fg sg)
+  hom-case {s = inj₂ y} fg gg sg = trans (lift redr) (hom-app gg sg)
 
   open import Function
 
   -- interpretation of terms in the glued model
   -- Note: main challenge here is to provide a proof
-  -- object that reify is a homomorphism in each case
+  -- object that quot is a homomorphism in each case
   gl : (t : Tm a) →  Gl (eval t)
   gl K x xg    = refl , λ x _ → (lift redk) , xg
   gl Zero      = tt
   gl Succ      = λ x _ → refl , tt
-  gl (App t u) = π₂ (gl t _ (gl u))
+  gl (t ∙ u) = π₂ (gl t _ (gl u))
   gl S g gg    = refl , λ f fg →
     refl , λ x xg →
          reds ◅ trans
-           (app* (homReify-app gg xg) (homReify-app fg xg))
-           (homReify-app (appg gg xg) (appg fg xg))
+           (app* (hom-app gg xg) (hom-app fg xg))
+           (hom-app (appg gg xg) (appg fg xg))
         , appg (appg gg xg) (appg fg xg)
   gl Rec x xg   = refl , (λ f fg →
     refl , λ n ng →
-      homReify-rec {n = n} xg fg ng , (recg {n = n} xg fg ng))
+      hom-rec {n = n} xg fg ng , (recg {n = n} xg fg ng))
   gl Inl x xg = refl , xg
   gl Inr x xg = refl , xg
   gl (Case) f fg = refl , λ g gg →
-    refl , λ s sg → {!!} , caseg {s = s} fg gg sg
+    refl , λ s sg → hom-case {s = s} fg gg sg , caseg {s = s} fg gg sg
 
   -- normalization is consistent with reduction (_⟶*_)
   -- or, loosely speaking, `norm` transforms by reduction
@@ -368,9 +372,9 @@ module Completeness where
   consistent-red* Zero = refl
   consistent-red* Succ = refl
   consistent-red* Rec = refl
-  consistent-red* (App t u) = trans
+  consistent-red* (t ∙ u) = trans
     (app* (consistent-red* t) (consistent-red* u))
-    (homReify-app (gl t) (gl u))
+    (hom-app (gl t) (gl u))
   consistent-red* Inl  = refl
   consistent-red* Inr  = refl
   consistent-red* Case = refl
@@ -402,7 +406,7 @@ module _ where
   app : {t t' : Tm (a ⇒ b)} {u u' : Tm a}
     → t ≈ t'
     → u ≈ u'
-    → App t u ≈ App t' u'
+    → t ∙ u ≈ t' ∙ u'
   app refl refl = refl
   app refl (fwd x ◅ q) = fwd (app2 x) ◅ app refl q
   app refl (bwd y ◅ q) = bwd (app2 y) ◅ app refl q
@@ -416,31 +420,6 @@ module _ where
     = trans (bwd (app1 x) ◅ fwd (app2 y) ◅ refl) (app p q)
   app (bwd x ◅ p) (bwd y ◅ q)
     = trans (bwd (app1 x) ◅ bwd (app2 y) ◅ refl) (app p q)
-
-
----------------------------------------
--- Abstract specification of the story
----------------------------------------
-
-module _ where
-
-  ⟦_⟧ᵍ : Ty → Set
-  ⟦ a ⟧ᵍ = Σ ⟦ a ⟧ Gl
-
-  evalG : Tm a → ⟦ a ⟧ᵍ
-  evalG {a} t = (eval t) , gl t
-
-  _≡ᵍ_ : (x y : ⟦ a ⟧ᵍ) → Set
-  _≡ᵍ_ x y = π₁ x ≡ π₁ y
-
-  soundG : {t t' : Tm a} → t ≈ t' → (evalG t) ≡ᵍ evalG t'
-  soundG p = sound p
-
-  reifyG : ⟦ a ⟧ᵍ → Tm a
-  reifyG v = reifyt (π₁ v)
-
-  normG : Tm a → Tm a
-  normG t = reifyG (evalG t)
 
 -----------------------------
 -- Intensional normalization
