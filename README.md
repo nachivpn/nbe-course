@@ -47,8 +47,8 @@ More details on the survey article to follow later.
 | 20 Nov, 10:00 | Introduction to NbE for untyped lambda calculus | Chapter 3 in [1] | EDIT 3128. Lead by Ayberk |
 | 27 Nov, 10:00 | Introduction to NbE for untyped lambda calculus (Part 2) | Chapter 3 in [1] | EDIT 8103. Lead by Carlos. |
 | 12 Dec | Presentation | _ | at the [Initial Types Club](https://github.com/InitialTypes/Club/wiki) meeting |
-| 20 Dec | Deadline for first submission  | _ | _ |
-| ?? Jan | Deadline for final submission  | _ | _ |
+| ~~20 Dec~~ | ~~Deadline for first submission~~  | _ | _ |
+| ~~?? Jan~~ | ~~Deadline for final submission~~  | _ | _ |
 
 ## Participants
 
