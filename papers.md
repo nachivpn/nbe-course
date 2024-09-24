@@ -19,7 +19,7 @@ This is not a fixed list, welcome to extend!
 * [Normalization by Evaluation with Typed Abstract Syntax](https://www.cambridge.org/core/journals/journal-of-functional-programming/article/normalization-by-evaluation-with-typed-abstract-syntax/EB9C84EDC74834E940111BC94D2E0481). O Danvy, M Rhiger, and K H Rose (2001, 2002)
 * [Extensional normalisation and type-directed partial evaluation for typed lambda calculus with sums](https://dl.acm.org/citation.cfm?id=964007). V Balat, R Cosmo, M Fiore (2004)
 * [Normalization by Evaluation for λ→2](https://link.springer.com/chapter/10.1007/978-3-540-24754-8_19). T Altenkirch and T Uustalu (2004)
-* [Accumulating Bindings](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1731b241dd9bfcc76e09d321eb137f4875eaa6e1) S Lindley (2009)
+* [Accumulating bindings](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1731b241dd9bfcc76e09d321eb137f4875eaa6e1). S Lindley (2009)
 * [Normalization by Evaluation and Algebraic Effects](https://www.sciencedirect.com/science/article/pii/S1571066113000534). D Ahman, S Staton (2013)
 * [Normalization by gluing](https://www.jonmsterling.com/pdfs/gluing-note.pdf). J Sterling, B Spitters (2018)
 * [Normalization by Evaluation for Call-by-Push-Value and Polarized Lambda-Calculus](https://arxiv.org/abs/1902.06097). A Abel, C Sattler (2019)
