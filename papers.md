@@ -15,6 +15,7 @@ This is not a fixed list, welcome to extend!
 * [Semantic analysis of normalisation by evaluation for typed lambda calculus](https://dl.acm.org/citation.cfm?id=571161).  	M Fiore (2000)
 * [Normalization by evaluation for the computational lambda-calculus](https://link.springer.com/chapter/10.1007/3-540-45413-6_15). A Filinski (2001)
 * [Normalization by evaluation for typed lambda calculus with coproducts](https://ieeexplore.ieee.org/abstract/document/932506). T Altenkirch, P Dybjer, M Hofmann, and  P Scott (2001)
+* [A Formalised Proof of the Soundness and Completeness of a Simply Typed Lambda-Calculus with Explicit Substitutions](https://link.springer.com/article/10.1023/A:1019964114625). C Coquand (2002)
 * [Normalization by Evaluation with Typed Abstract Syntax](https://www.cambridge.org/core/journals/journal-of-functional-programming/article/normalization-by-evaluation-with-typed-abstract-syntax/EB9C84EDC74834E940111BC94D2E0481). O Danvy, M Rhiger, and K H Rose (2001, 2002)
 * [Extensional normalisation and type-directed partial evaluation for typed lambda calculus with sums](https://dl.acm.org/citation.cfm?id=964007). V Balat, R Cosmo, M Fiore (2004)
 * [Normalization by Evaluation for λ→2](https://link.springer.com/chapter/10.1007/978-3-540-24754-8_19). T Altenkirch and T Uustalu (2004)
